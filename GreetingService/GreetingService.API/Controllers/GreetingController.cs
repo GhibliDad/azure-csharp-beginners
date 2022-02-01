@@ -21,18 +21,18 @@ namespace GreetingService.API.Controllers
 
         // GET: api/<GreetingController>
         [HttpGet]
-        public IEnumerable<Greeting> Get()
+        public async Task<IEnumerable<Greeting>> Get()
         {
-            return _greetingRepository.Get();
+            return await _greetingRepository.GetAsync();
         }
 
         // GET api/<GreetingController>/5
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Greeting))]        //when we return IActionResult instead of Greeting, there is no way for swagger to know what the return type is, we need to explicitly state what it will return
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            var greeting = _greetingRepository.Get(id);
+            var greeting = await _greetingRepository.GetAsync(id);
             if (greeting == null)
                 return NotFound();
 
@@ -43,11 +43,11 @@ namespace GreetingService.API.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost]
-        public IActionResult Post([FromBody] Greeting greeting)
+        public async Task<IActionResult> Post([FromBody] Greeting greeting)
         {
             try
             {
-                _greetingRepository.Create(greeting);
+                await _greetingRepository.CreateAsync(greeting);
                 return Accepted();
             }
             catch                       //any exception will result in 409 Conflict which might not be true but we'll use this for now
@@ -60,11 +60,11 @@ namespace GreetingService.API.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Put([FromBody] Greeting greeting)
+        public async Task<IActionResult> Put([FromBody] Greeting greeting)
         {
             try
             {
-                _greetingRepository.Update(greeting);
+                await _greetingRepository.UpdateAsync(greeting);
                 return Accepted();
             }
             catch

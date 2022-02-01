@@ -13,22 +13,22 @@ namespace GreetingService.Infrastructure
     {
         private readonly IList<Greeting> _repository = new List<Greeting>();
 
-        public void Create(Greeting greeting)
+        public async Task CreateAsync(Greeting greeting)
         {
             _repository.Add(greeting);
         }
 
-        public Greeting Get(Guid id)
+        public async Task<Greeting> GetAsync(Guid id)
         {
             return _repository.FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<Greeting> Get()
+        public async Task<IEnumerable<Greeting>> GetAsync()
         {
             return _repository;
         }
 
-        public void Update(Greeting greeting)
+        public async Task UpdateAsync(Greeting greeting)
         {
             var existingGreeting = _repository.FirstOrDefault(x => x.Id == greeting.Id);
 
