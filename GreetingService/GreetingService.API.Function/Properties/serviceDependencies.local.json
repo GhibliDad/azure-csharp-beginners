@@ -3,6 +3,20 @@
     "storage1": {
       "type": "storage.emulator",
       "connectionId": "AzureWebJobsStorage"
+    },
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "storage2": {
+      "secretStore": "LocalSecretsFile",
+      "type": "storage.emulator",
+      "connectionId": "LoggingStorageAccount"
+    },
+    "storage3": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/keenteslogzppvh642sa7fg",
+      "type": "storage.azure",
+      "connectionId": "LoggingStorageAccount"
     }
   }
 }
