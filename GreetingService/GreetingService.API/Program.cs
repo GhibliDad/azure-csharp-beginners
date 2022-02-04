@@ -1,5 +1,6 @@
 using GreetingService.Core.Interfaces;
-using GreetingService.Infrastructure;
+using GreetingService.Infrastructure.GreetingRepository;
+using GreetingService.Infrastructure.UserService;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 
 var builder = WebApplication.CreateBuilder(args);

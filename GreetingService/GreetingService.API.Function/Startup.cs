@@ -1,12 +1,13 @@
 ﻿using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Interfaces;
-using GreetingService.Infrastructure;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System;
 using Serilog;
+using GreetingService.Infrastructure.GreetingRepository;
+using GreetingService.Infrastructure.UserService;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 namespace GreetingService.API.Function
