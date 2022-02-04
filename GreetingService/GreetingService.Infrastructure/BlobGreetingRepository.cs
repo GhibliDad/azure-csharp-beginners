@@ -50,11 +50,11 @@ namespace GreetingService.Infrastructure
         public async Task<IEnumerable<Greeting>> GetAsync()
         {
             var greetings = new List<Greeting>();
-            var blobs = _blobContainerClient.GetBlobsAsync();
-            await foreach (var blob in blobs)
+            var blobs = _blobContainerClient.GetBlobsAsync();                           //GetBlobsAsync return an AsyncPageable which is an IAsyncEnumerable<T>. This type is a bit special, check out the await foreach on the next line
+            await foreach (var blob in blobs)                                           //this is how we can asynchronously iterate and process data in an IAsyncEnumerable<T>
             {
                 var blobClient = _blobContainerClient.GetBlobClient(blob.Name);
-                var blobContent = await blobClient.DownloadContentAsync();
+                var blobContent = await blobClient.DownloadContentAsync();              //downloading lots of blobs like this will be slow, a more common scenario would be to list metadata for each blob and then download one or more blobs on demand instead of by default downloading all blobs. But we'll roll with this solution in this exercise
                 var greeting = blobContent.Value.Content.ToObjectFromJson<Greeting>();
                 greetings.Add(greeting);
             }
