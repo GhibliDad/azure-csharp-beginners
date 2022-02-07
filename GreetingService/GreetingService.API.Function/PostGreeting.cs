@@ -41,7 +41,7 @@ namespace GreetingService.API.Function
                 return new UnauthorizedResult();
 
             var body = await req.ReadAsStringAsync();
-            var greeting = JsonSerializer.Deserialize<Greeting>(body);
+            var greeting = JsonSerializer.Deserialize<Greeting>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             try
             {

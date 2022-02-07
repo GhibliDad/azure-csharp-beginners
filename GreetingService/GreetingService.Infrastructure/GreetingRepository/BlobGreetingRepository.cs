@@ -28,7 +28,8 @@ namespace GreetingService.Infrastructure.GreetingRepository
 
         public async Task CreateAsync(Greeting greeting)
         {
-            var blob = _blobContainerClient.GetBlobClient(greeting.Id.ToString());              //get a reference to the blob using Greeting.ID as blob name
+            var path = $"{greeting.From}/{greeting.To}/{greeting.Id}";
+            var blob = _blobContainerClient.GetBlobClient(path);              //get a reference to the blob using Greeting.ID as blob name
             if (await blob.ExistsAsync())
                 throw new Exception($"Greeting with id: {greeting.Id} already exists");
 
@@ -36,12 +37,16 @@ namespace GreetingService.Infrastructure.GreetingRepository
             await blob.UploadAsync(greetingBinary);
         }
 
+        //More info about IAsyncEnumerable here: https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/november/csharp-iterating-with-async-enumerables-in-csharp-8
         public async Task<Greeting> GetAsync(Guid id)
         {
-            var blobClient = _blobContainerClient.GetBlobClient(id.ToString());
-            if (!await blobClient.ExistsAsync())
+            var blobs = _blobContainerClient.GetBlobsAsync();
+            var blob = await blobs.FirstOrDefaultAsync(x => x.Name.EndsWith(id.ToString()));            //Special method FirstOrDefaultAsync requires System.Linq.Async nuget package. Use these methods to query IAsyncEnumerable
+
+            if (blob == null)
                 throw new Exception($"Greeting with id: {id} not found");
 
+            var blobClient = _blobContainerClient.GetBlobClient(blob.Name);
             var blobContent = await blobClient.DownloadContentAsync();
             var greeting = blobContent.Value.Content.ToObjectFromJson<Greeting>();
             return greeting;
@@ -64,10 +69,18 @@ namespace GreetingService.Infrastructure.GreetingRepository
 
         public async Task UpdateAsync(Greeting greeting)
         {
-            var blobClient = _blobContainerClient.GetBlobClient(greeting.Id.ToString());
-            await blobClient.DeleteIfExistsAsync();
-            var greetingBinary = new BinaryData(greeting, _jsonSerializerOptions);
-            await blobClient.UploadAsync(greetingBinary);
+            //since we're adding To and From to the blob name (path), an updated greeting could potentially change the blob name, we need to first remove to old greeting and then create the new Greeting when the new path
+
+            var previousGreeting = await GetAsync(greeting.Id);
+
+            var previousGreetingPath = $"{previousGreeting.From}/{previousGreeting.To}/{previousGreeting.Id}";
+            var previousGreetingBlobClient = _blobContainerClient.GetBlobClient(previousGreetingPath);
+            await previousGreetingBlobClient.DeleteAsync();
+
+            var newGreetingPath = $"{greeting.From}/{greeting.To}/{greeting.Id}";
+            var newGreetingBinary = new BinaryData(greeting, _jsonSerializerOptions);
+            var newGreetingBlobClient = _blobContainerClient.GetBlobClient(newGreetingPath);
+            await previousGreetingBlobClient.UploadAsync(newGreetingBinary);
         }
     }
 }
