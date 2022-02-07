@@ -67,6 +67,58 @@ namespace GreetingService.Infrastructure.GreetingRepository
             return greetings;
         }
 
+        public async Task<IEnumerable<Greeting>> GetAsync(string from, string to)
+        {
+            var prefix = "";                            //A prefix is literally a prefix on the name, that means it starts from the left. Our blob names are stored like this: {from}/{to}/{id}
+            if (!string.IsNullOrWhiteSpace(from))       //only add 'from' to prefix if it's not null
+            {
+                prefix = from;
+                if (!string.IsNullOrWhiteSpace(to))     //only add 'to' to prefix if it's not null and 'from' is not null
+                {
+                    prefix = $"{prefix}/{to}";          //no wild card support in prefix, only add 'to' to prefix if 'from' also is not null
+                }
+            }
+
+            var blobs = _blobContainerClient.GetBlobsAsync(prefix: prefix);             //send prefix to the server to only retrieve blobs that matches. The below logic would work even without prefix, but it's slightly optimized if we can send a non empty prefix
+
+            var greetings = new List<Greeting>();
+            await foreach (var blob in blobs)                                           //this is how we can asynchronously iterate and process data in an IAsyncEnumerable<T>
+            {
+                var blobNameParts = blob.Name.Split('/');
+
+                if (!string.IsNullOrWhiteSpace(from) && !string.IsNullOrWhiteSpace(to) && blob.Name.StartsWith($"{from}/{to}/"))    //both 'from' and 'to' has values
+                {
+                    Greeting greeting = await DownloadBlob(blob);
+                    greetings.Add(greeting);
+                }
+                else if (!string.IsNullOrWhiteSpace(from) && string.IsNullOrWhiteSpace(to) && blob.Name.StartsWith($"{from}"))      //'from' has value, 'to' is null
+                {
+                    Greeting greeting = await DownloadBlob(blob);
+                    greetings.Add(greeting);
+                }
+                else if (string.IsNullOrWhiteSpace(from) && !string.IsNullOrWhiteSpace(to) && blobNameParts[1].Equals(to))          //'from' is null, 'to' has value
+                {
+                    Greeting greeting = await DownloadBlob(blob);
+                    greetings.Add(greeting);
+                }
+                else if (string.IsNullOrWhiteSpace(from) && string.IsNullOrWhiteSpace(to))                                          //both 'from' and 'to' are null
+                {
+                    Greeting greeting = await DownloadBlob(blob);
+                    greetings.Add(greeting);
+                }
+            }
+
+            return greetings;
+        }
+
+        private async Task<Greeting> DownloadBlob(Azure.Storage.Blobs.Models.BlobItem blob)
+        {
+            var blobClient = _blobContainerClient.GetBlobClient(blob.Name);
+            var blobContent = await blobClient.DownloadContentAsync();              //downloading lots of blobs like this will be slow, a more common scenario would be to list metadata for each blob and then download one or more blobs on demand instead of by default downloading all blobs. But we'll roll with this solution in this exercise
+            var greeting = blobContent.Value.Content.ToObjectFromJson<Greeting>();
+            return greeting;
+        }
+
         public async Task UpdateAsync(Greeting greeting)
         {
             //since we're adding To and From to the blob name (path), an updated greeting could potentially change the blob name, we need to first remove to old greeting and then create the new Greeting when the new path

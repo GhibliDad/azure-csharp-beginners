@@ -49,6 +49,19 @@ namespace GreetingService.Infrastructure.GreetingRepository
             return greetings;
         }
 
+        public async Task<IEnumerable<Greeting>> GetAsync(string from, string to)
+        {
+            var greetings = await GetAsync();
+
+            if (!string.IsNullOrWhiteSpace(from))
+                greetings = greetings.Where(x => x.From.Equals(from, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrWhiteSpace(to))
+                greetings = greetings.Where(x => x.To.Equals(to, StringComparison.OrdinalIgnoreCase));
+
+            return greetings;
+        }
+
         public async Task UpdateAsync(Greeting greeting)
         {
             var content = File.ReadAllText(_filePath);
