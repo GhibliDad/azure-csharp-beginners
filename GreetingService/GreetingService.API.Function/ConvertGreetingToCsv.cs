@@ -18,7 +18,7 @@ namespace GreetingService.API.Function
         //'[Blob("greetings-csv/{name}", FileAccess.Write)] Stream greetingCsvBlob' is an output binding in Azure Functions, writing to this stream will create a blob in the container: 'greetings-csv' with the same name as our original greeting
         //'string name' will contain the blob name 
         [FunctionName("ConvertGreetingToCsv")]
-        public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount")] Stream greetingJsonBlob, string name, [Blob("greetings-csv/{name}", FileAccess.Write, Connection = "LoggingStorageAccount" )] Stream greetingCsvBlob, ILogger log)
+        public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount")] Stream greetingJsonBlob, string name, [Blob("greetings-csv/{name}", FileAccess.Write, Connection = "LoggingStorageAccount")] Stream greetingCsvBlob, ILogger log)
         {
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {greetingJsonBlob.Length} Bytes");
 
