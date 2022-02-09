@@ -50,7 +50,7 @@ namespace GreetingService.API.Function
 
             builder.Services.AddDbContext<GreetingDbContext>(options =>
             {
-                options.UseSqlServer(config["GreetingDbConnectionString"]);
+                options.UseSqlServer(config["GreetingDbConnectionString"]);     //make sure that the "GreetingDbConnectionString" app setting contains the connection string value
             });
         }
     }
