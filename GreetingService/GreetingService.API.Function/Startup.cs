@@ -8,6 +8,8 @@ using System;
 using Serilog;
 using GreetingService.Infrastructure.GreetingRepository;
 using GreetingService.Infrastructure.UserService;
+using GreetingService.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 namespace GreetingService.API.Function
@@ -40,11 +42,16 @@ namespace GreetingService.API.Function
                 c.AddSerilog(logger, true);
             });
 
-            builder.Services.AddSingleton<IGreetingRepository, BlobGreetingRepository>();
+            builder.Services.AddScoped<IGreetingRepository, SqlGreetingRepository>();
 
             builder.Services.AddScoped<IUserService, BlobUserService>();
 
             builder.Services.AddScoped<IAuthHandler, BasicAuthHandler>();
+
+            builder.Services.AddDbContext<GreetingDbContext>(options =>
+            {
+                options.UseSqlServer(config["GreetingDbConnectionString"]);
+            });
         }
     }
 }

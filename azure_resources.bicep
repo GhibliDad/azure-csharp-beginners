@@ -80,6 +80,10 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           'value': 'dotnet'
         }
         {
+          'name': 'WEBSITE_RUN_FROM_PACKAGE'
+          'value': '1'
+        }
+        {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
         }
