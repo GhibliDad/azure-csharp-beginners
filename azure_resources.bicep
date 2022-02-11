@@ -1,4 +1,6 @@
 param appName string
+param sqlAdminUser string = 'greetingAdmin'
+param sqlAdminPassword string
 param location string = resourceGroup().location
 
 // storage accounts must be between 3 and 24 characters in length and use numbers and lower-case letters only
@@ -7,6 +9,8 @@ var loggingStorageAccountName = '${substring(appName,0,7)}log${uniqueString(reso
 var hostingPlanName = '${appName}${uniqueString(resourceGroup().id)}'
 var appInsightsName = '${appName}${uniqueString(resourceGroup().id)}'
 var functionAppName = '${appName}'
+var sqlServerName = '${appName}sqlserver'
+var sqlDbName = '${appName}sqldb'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: storageAccountName
@@ -91,9 +95,36 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           name: 'FileRepositoryFilePath'
           value: '/home/site/wwwroot/greeting.json'
         }
+        {
+          name: 'GreetingDbConnectionString'
+          value: 'Data Source=tcp:${reference(sqlServer.id).fullyQualifiedDomainName},1433;Initial Catalog=${sqlDbName};User Id=${sqlAdminUser};Password=\'${sqlAdminPassword}\';'
+        }
+        
         // WEBSITE_CONTENTSHARE will also be auto-generated - https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentshare
         // WEBSITE_RUN_FROM_PACKAGE will be set to 1 by func azure functionapp publish
       ]
     }
+  }
+}
+
+resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
+  name: sqlServerName
+  location: location
+  properties: {
+    administratorLogin: sqlAdminUser
+    administratorLoginPassword: sqlAdminPassword
+    version: '12.0'
+  }
+}
+
+resource sqlDb 'Microsoft.Sql/servers/databases@2019-06-01-preview' = {
+  name: '${sqlServer.name}/${sqlDbName}' 
+  location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Basic'
+    capacity: 5
+  }
+  properties: {
   }
 }
