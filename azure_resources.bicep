@@ -115,16 +115,22 @@ resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
     administratorLoginPassword: sqlAdminPassword
     version: '12.0'
   }
-}
 
-resource sqlDb 'Microsoft.Sql/servers/databases@2019-06-01-preview' = {
-  name: '${sqlServer.name}/${sqlDbName}' 
-  location: location
-  sku: {
-    name: 'Basic'
-    tier: 'Basic'
-    capacity: 5
+  resource allowAllWindowsAzureIps 'firewallRules@2021-05-01-preview' = {
+    name: 'AllowAllWindowsAzureIps'
+    properties: {
+      endIpAddress: '0.0.0.0'
+      startIpAddress: '0.0.0.0'
+    }
   }
-  properties: {
+
+  resource sqlDb 'databases@2019-06-01-preview' = {
+    name: sqlDbName
+    location: location
+    sku: {
+      name: 'Basic'
+      tier: 'Basic'
+      capacity: 5
+    }
   }
 }
