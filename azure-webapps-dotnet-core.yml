@@ -86,7 +86,7 @@ jobs:
           azcliversion: 2.30.0
           inlineScript: |
             az group create -l westeurope -n keen-rg-dev
-            az deployment group create --resource-group keen-rg-dev --template-file ./azure_resources.bicep --parameters appName=keentestdev sqlAdminPassword=${{SQL_ADMIN_PASSWORD}}
+            az deployment group create --resource-group keen-rg-dev --template-file ./azure_resources.bicep --parameters appName=keentestdev sqlAdminPassword=${{secrets.SQL_ADMIN_PASSWORD}}
 
   deploy:
     runs-on: ubuntu-latest
