@@ -38,14 +38,14 @@ namespace GreetingService.API.Function
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            if (!_authHandler.IsAuthorized(req))
+            if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
             var user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            _userService.UpdateUser(user);
+            await _userService.UpdateUserAsync(user);
 
-            var updatedUser = _userService.GetUser(user.Email);
+            var updatedUser = await _userService.GetUserAsync(user.Email);
             
             return new OkObjectResult(updatedUser);
         }

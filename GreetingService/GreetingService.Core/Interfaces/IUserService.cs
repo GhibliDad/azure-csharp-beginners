@@ -10,10 +10,11 @@ namespace GreetingService.Core.Interfaces
     public interface IUserService
     {
         public bool IsValidUser(string username, string password);
-        public User GetUser(string email);
-        public IEnumerable<User> GetUsers();
-        public void CreateUser(User user);
-        public void UpdateUser(User user);
-        public void DeleteUser(string email);
+        public Task<bool> IsValidUserAsync(string username, string password);
+        public Task<User> GetUserAsync(string email);
+        public Task<IEnumerable<User>> GetUsersAsync();
+        public Task CreateUserAsync(User user);
+        public Task UpdateUserAsync(User user);
+        public Task DeleteUserAsync(string email);
     }
 }

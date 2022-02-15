@@ -16,22 +16,22 @@ namespace GreetingService.Infrastructure.UserService
             { "anton","winter2022" },
         };
 
-        public void CreateUser(User user)
+        public async Task CreateUserAsync(User user)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteUser(string email)
+        public async Task DeleteUserAsync(string email)
         {
             throw new NotImplementedException();
         }
 
-        public User GetUser(string email)
+        public async Task<User> GetUserAsync(string email)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<User> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
             throw new NotImplementedException();
         }
@@ -47,7 +47,12 @@ namespace GreetingService.Infrastructure.UserService
             return true;
         }
 
-        public void UpdateUser(User user)
+        public async Task<bool> IsValidUserAsync(string username, string password)
+        {
+            return IsValidUser(username, password);
+        }
+
+        public async Task UpdateUserAsync(User user)
         {
             throw new NotImplementedException();
         }

@@ -23,22 +23,22 @@ namespace GreetingService.Infrastructure.UserService
             _blobContainerClient.CreateIfNotExists();                               //create the container if it does not already exist
         }
 
-        public void CreateUser(User user)
+        public async Task CreateUserAsync(User user)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteUser(string email)
+        public async Task DeleteUserAsync(string email)
         {
             throw new NotImplementedException();
         }
 
-        public User GetUser(string email)
+        public async Task<User> GetUserAsync(string email)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<User> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
             throw new NotImplementedException();
         }
@@ -62,7 +62,26 @@ namespace GreetingService.Infrastructure.UserService
             return false;
         }
 
-        public void UpdateUser(User user)
+        public async Task<bool> IsValidUserAsync(string username, string password)
+        {
+            var blob = _blobContainerClient.GetBlobClient(_blobName);
+
+            if (!await blob.ExistsAsync())
+                return false;
+
+            var blobContent = await blob.DownloadContentAsync();
+            var usersDictionary = blobContent.Value.Content.ToObjectFromJson<IDictionary<string, string>>();
+
+            if (usersDictionary.TryGetValue(username, out var storedPassword))
+            {
+                if (storedPassword.Equals(password))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public async Task UpdateUserAsync(User user)
         {
             throw new NotImplementedException();
         }

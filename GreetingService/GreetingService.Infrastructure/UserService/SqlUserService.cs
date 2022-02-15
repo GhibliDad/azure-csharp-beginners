@@ -1,5 +1,6 @@
 ﻿using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,34 +18,34 @@ namespace GreetingService.Infrastructure.UserService
             _greetingDbContext = greetingDbContext;
         }
 
-        public void CreateUser(User user)
+        public async Task CreateUserAsync(User user)
         {
             user.Created = DateTime.Now;
             user.Modified = DateTime.Now;
-            _greetingDbContext.Users.Add(user);
-            _greetingDbContext.SaveChanges();
+            await _greetingDbContext.Users.AddAsync(user);
+            await _greetingDbContext.SaveChangesAsync();
         }
 
-        public void DeleteUser(string email)
+        public async Task DeleteUserAsync(string email)
         {
             _greetingDbContext.Users.Remove(new User { Email = email});
-            _greetingDbContext.SaveChanges();
+            await _greetingDbContext.SaveChangesAsync();
         }
 
-        public User GetUser(string email)
+        public async Task<User> GetUserAsync(string email)
         {
-            var user = _greetingDbContext.Users.FirstOrDefault(x => x.Email.Equals(email));
+            var user = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
             return user;
         }
 
-        public IEnumerable<User> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
-            return _greetingDbContext.Users.ToList();
+            return await _greetingDbContext.Users.ToListAsync();
         }
 
-        public void UpdateUser(User user)
+        public async Task UpdateUserAsync(User user)
         {
-            var existingUser = _greetingDbContext.Users.FirstOrDefault(x => x.Email.Equals(user.Email));
+            var existingUser = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(user.Email));
             if (existingUser == null)
                 throw new Exception("User not found");      //Consider throwing a custom not found exception instead
 
@@ -58,7 +59,16 @@ namespace GreetingService.Infrastructure.UserService
                 existingUser.FirstName = user.FirstName;
 
             existingUser.Modified = DateTime.Now;          
-            _greetingDbContext.SaveChanges();
+            await _greetingDbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsValidUserAsync(string username, string password)
+        {
+            var user = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(username));
+            if (user != null && user.Password.Equals(password))
+                return true;
+
+            return false;
         }
 
         public bool IsValidUser(string username, string password)
