@@ -31,7 +31,7 @@ namespace GreetingService.Infrastructure.UserService
 
         public async Task DeleteUserAsync(string email)
         {
-            var user = _greetingDbContext.Users.FirstOrDefault(x => x.Email.Equals(email));
+            var user = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
             if (user == null)
             {
                 _logger.LogWarning("Delete user failed, user with email {email} not found", email);
@@ -39,7 +39,7 @@ namespace GreetingService.Infrastructure.UserService
             }
 
             _greetingDbContext.Users.Remove(user);
-            _greetingDbContext.SaveChanges();
+            await _greetingDbContext.SaveChangesAsync();
         }
 
         public async Task<User> GetUserAsync(string email)
