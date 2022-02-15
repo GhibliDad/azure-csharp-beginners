@@ -1,5 +1,4 @@
 ﻿using Azure.Storage.Blobs;
-using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -23,26 +22,6 @@ namespace GreetingService.Infrastructure.UserService
             _blobContainerClient.CreateIfNotExists();                               //create the container if it does not already exist
         }
 
-        public void CreateUser(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteUser(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public User GetUser(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<User> GetUsers()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsValidUser(string username, string password)
         {
             var blob = _blobContainerClient.GetBlobClient(_blobName);
@@ -60,11 +39,6 @@ namespace GreetingService.Infrastructure.UserService
             }
 
             return false;
-        }
-
-        public void UpdateUser(User user)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using GreetingService.Core.Entities;
-using GreetingService.Core.Interfaces;
+﻿using GreetingService.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,27 +14,6 @@ namespace GreetingService.Infrastructure.UserService
             { "keen","summer2022" },
             { "anton","winter2022" },
         };
-
-        public void CreateUser(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteUser(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public User GetUser(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<User> GetUsers()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsValidUser(string username, string password)
         {
             if (!_users.TryGetValue(username, out var storedPassword))              //user does not exist
@@ -45,11 +23,6 @@ namespace GreetingService.Infrastructure.UserService
                 return false;
 
             return true;
-        }
-
-        public void UpdateUser(User user)
-        {
-            throw new NotImplementedException();
         }
     }
 }
