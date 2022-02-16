@@ -132,7 +132,7 @@ namespace GreetingService.Infrastructure.GreetingRepository
             var newGreetingPath = $"{greeting.From}/{greeting.To}/{greeting.Id}";
             var newGreetingBinary = new BinaryData(greeting, _jsonSerializerOptions);
             var newGreetingBlobClient = _blobContainerClient.GetBlobClient(newGreetingPath);
-            await previousGreetingBlobClient.UploadAsync(newGreetingBinary);
+            await newGreetingBlobClient.UploadAsync(newGreetingBinary);
         }
     }
 }
