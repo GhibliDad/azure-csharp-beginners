@@ -40,8 +40,16 @@ namespace GreetingService.API.Function
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            var body = await req.ReadAsStringAsync();
-            var greeting = JsonSerializer.Deserialize<Greeting>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            Greeting greeting;
+            try
+            {
+                var body = await req.ReadAsStringAsync();
+                greeting = JsonSerializer.Deserialize<Greeting>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e);
+            }
 
             try
             {

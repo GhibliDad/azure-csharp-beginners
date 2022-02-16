@@ -41,7 +41,16 @@ namespace GreetingService.API.Function
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            var user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            User user;
+            try
+            {
+                user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e);
+            }
+            
 
             await _userService.CreateUserAsync(user);
 
