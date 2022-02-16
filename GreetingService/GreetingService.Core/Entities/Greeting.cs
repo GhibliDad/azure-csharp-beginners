@@ -1,6 +1,4 @@
-﻿using GreetingService.Core.Exceptions;
-using GreetingService.Core.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,40 +10,8 @@ namespace GreetingService.Core.Entities
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Message { get; set; }
-
-        private string _from;
-        public string From 
-        {
-            get
-            {
-                return _from;
-            }
-
-            set
-            {
-                if (!InputValidationHelper.IsValidEmail(value))
-                    throw new InvalidEmailException($"{value} is not a valid email");
-
-                _from = value;
-            }
-        }
-        
-        private string _to;
-        public string To
-        {
-            get 
-            {
-                return _to;
-            }
-
-            set 
-            {
-                if (!InputValidationHelper.IsValidEmail(value))
-                    throw new InvalidEmailException($"{value} is not a valid email");
-
-                _to = value;
-            }
-        }
+        public string From { get; set; }
+        public string To { get; set; }
         public DateTime Timestamp { get; set;  } = DateTime.Now;
     }
 }
