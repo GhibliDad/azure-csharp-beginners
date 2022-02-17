@@ -4,6 +4,7 @@ using GreetingService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GreetingService.Infrastructure.Migrations
 {
     [DbContext(typeof(GreetingDbContext))]
-    partial class GreetingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220216212952_CreatedInvoiceTable")]
+    partial class CreatedInvoiceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,19 +77,19 @@ namespace GreetingService.Infrastructure.Migrations
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
-                    b.Property<string>("SenderEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SenderEmail");
+                    b.HasIndex("UserEmail");
 
                     b.ToTable("Invoices");
                 });
@@ -141,13 +143,13 @@ namespace GreetingService.Infrastructure.Migrations
 
             modelBuilder.Entity("GreetingService.Core.Entities.Invoice", b =>
                 {
-                    b.HasOne("GreetingService.Core.Entities.User", "Sender")
+                    b.HasOne("GreetingService.Core.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("SenderEmail")
+                        .HasForeignKey("UserEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Sender");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GreetingService.Core.Entities.Invoice", b =>

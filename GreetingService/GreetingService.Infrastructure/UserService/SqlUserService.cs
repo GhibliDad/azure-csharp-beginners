@@ -45,12 +45,16 @@ namespace GreetingService.Infrastructure.UserService
         public async Task<User> GetUserAsync(string email)
         {
             var user = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            if (user == null)
+                return null;
+            
             return user;
         }
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
-            return await _greetingDbContext.Users.ToListAsync();
+            var users = await _greetingDbContext.Users.ToListAsync();
+            return users;
         }
 
         public async Task UpdateUserAsync(User user)

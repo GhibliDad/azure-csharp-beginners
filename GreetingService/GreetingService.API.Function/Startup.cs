@@ -10,6 +10,7 @@ using GreetingService.Infrastructure.GreetingRepository;
 using GreetingService.Infrastructure.UserService;
 using GreetingService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using GreetingService.Infrastructure.InvoiceService;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 namespace GreetingService.API.Function
@@ -47,6 +48,8 @@ namespace GreetingService.API.Function
             builder.Services.AddScoped<IUserService, SqlUserService>();
 
             builder.Services.AddScoped<IAuthHandler, BasicAuthHandler>();
+
+            builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
 
             builder.Services.AddDbContext<GreetingDbContext>(options =>
             {
