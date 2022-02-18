@@ -9,7 +9,15 @@ namespace GreetingService.Core.Entities
     public class Invoice
     {
         public int? Id { get; set; }
+
+        /// <summary>
+        /// A relationship to User
+        /// </summary>
         public User Sender { get; set; }
+
+        /// <summary>
+        /// A relationship to Greeting
+        /// </summary>
         public IEnumerable<Greeting> Greetings { get; set; }
         public int Year { get; set; }
         public int Month { get; set; }

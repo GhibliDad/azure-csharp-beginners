@@ -37,6 +37,7 @@ namespace GreetingService.Infrastructure.InvoiceService
         public async Task<Invoice> GetInvoiceAsync(int year, int month, string email)
         {
             //Only one invoice per user and month should exist
+            //Relations are not included by default, here we use .Include() to explicitly state that the query result should include the relations for Greetings and Sender
             var invoice = await _greetingDbContext.Invoices.Include(x => x.Greetings)
                                                            .Include(x => x.Sender)
                                                            .FirstOrDefaultAsync(x => x.Year == year && x.Month == month && x.Sender.Email.Equals(email));
@@ -45,6 +46,7 @@ namespace GreetingService.Infrastructure.InvoiceService
 
         public async Task<IEnumerable<Invoice>> GetInvoicesAsync(int year, int month)
         {
+            //Relations are not included by default, here we use .Include() to explicitly state that the query result should include the relations for Greetings and Sender
             var invoices = await _greetingDbContext.Invoices.Include(x => x.Greetings)
                                                             .Include(x => x.Sender)
                                                             .Where(x => x.Year == year && x.Month == month).ToListAsync();
