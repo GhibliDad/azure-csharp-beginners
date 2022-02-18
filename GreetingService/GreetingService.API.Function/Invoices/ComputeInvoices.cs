@@ -37,7 +37,7 @@ namespace GreetingService.API.Function.Invoices
             foreach (var group in greetingsGroupedByInvoice)
             {
                 var user = await _userService.GetUserAsync(group.Key.From);     //get user details
-                var invoice = new Invoice
+                var invoice = new Invoice                                       //create the invoice, we don't need to populate the properties that have default values
                 {
                     Greetings = group,
                     Month = group.Key.Month,
