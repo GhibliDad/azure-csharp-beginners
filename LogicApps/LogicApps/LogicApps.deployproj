@@ -27,8 +27,8 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
-    <Content Include="LogicApp.json" />
-    <Content Include="LogicApp.parameters.json" />
+    <Content Include="keen-la-send-weather-greeting.json" />
+    <Content Include="keen-la-send-weather-greeting.parameters.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>
