@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
+﻿using BillingService.Contracts;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Resolvers;
 using Newtonsoft.Json.Serialization;
@@ -21,25 +22,18 @@ namespace BillingService
         public IEnumerable<InvoiceRow> invoice_rows { get; set; }
     }
 
-    public class InvoiceRow
-    {
-        public string description { get; set; }
-        public double count { get; set; }
-        public decimal amount { get; set; }
-    }
-
     public class CreateInvoiceRequestExample : OpenApiExample<CreateInvoiceRequest>
     {
         public override IOpenApiExample<CreateInvoiceRequest> Build(NamingStrategy namingStrategy = null)
         {
             var request = new CreateInvoiceRequest
             {
-                amount = 123,
+                amount = 12,
                 currency = "sek",
                 customer = "user@domain.com",
                 invoice_rows = new InvoiceRow[]
                 {
-                    new InvoiceRow{ amount = 12, count = 2, description = "Hello there!"},
+                    new InvoiceRow{ amount = 12, count = 1, description = "Hello there!"},
                 },
                 month = 1,
                 year = 2022,

@@ -26,7 +26,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-keen-la-send-weather-greeting:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,3 +44,22 @@ jobs:
           inlineScript: |
             az group create -l westeurope -n keen-rg-dev
             az deployment group create -g keen-rg-dev --template-file ./LogicApps/keen-la-send-weather-greeting.json --parameters ./LogicApps/keen-la-send-weather-greeting.parameters.json --parameters password=${{secrets.GREETING_SERVICE_BASIC_AUTH_PASSWORD}}
+
+  deploy-keen-la-send-greeting-invoice-to-billing-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az group create -l westeurope -n keen-rg-dev
+            az deployment group create -g keen-rg-dev --template-file ./LogicApps/keen-la-send-greeting-invoice-to-billing-service.json --parameters ./LogicApps/keen-la-send-greeting-invoice-to-billing-service.parameters.json --parameters greetingServicePassword=${{secrets.GREETING_SERVICE_BASIC_AUTH_PASSWORD}} billingServicePassword=${{secrets.BILLING_SERVICE_PASSWORD}}

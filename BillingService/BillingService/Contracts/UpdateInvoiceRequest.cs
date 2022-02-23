@@ -11,49 +11,31 @@ using System.Threading.Tasks;
 
 namespace BillingService
 {
-    [OpenApiExample(typeof(InvoiceExample))]
-    public class Invoice
+    [OpenApiExample(typeof(UpdateInvoiceRequestExample))]
+    public class UpdateInvoiceRequest
     {
         public Guid id { get; set; }
-        public int year { get; set; }
-        public int month { get; set; }
-        public string customer { get; set; }
         public decimal amount { get; set; }
         public string currency { get; set; }
-
-        private IEnumerable<InvoiceRow> _invoiceRows;
-        public IEnumerable<InvoiceRow> invoice_rows
-        {
-            get
-            {
-                return _invoiceRows ?? Enumerable.Empty<InvoiceRow>();
-            }
-            set
-            {
-                _invoiceRows = value;
-            }
-        }
+        public IEnumerable<InvoiceRow> invoice_rows { get; set; }
     }
 
-    public class InvoiceExample : OpenApiExample<Invoice>
+    public class UpdateInvoiceRequestExample : OpenApiExample<UpdateInvoiceRequest>
     {
-        public override IOpenApiExample<Invoice> Build(NamingStrategy namingStrategy = null)
+        public override IOpenApiExample<UpdateInvoiceRequest> Build(NamingStrategy namingStrategy = null)
         {
-            var request = new Invoice
+            var request = new UpdateInvoiceRequest
             {
                 id = Guid.NewGuid(),
                 amount = 12,
                 currency = "sek",
-                customer = "user@domain.com",
                 invoice_rows = new InvoiceRow[]
                 {
                     new InvoiceRow{ amount = 12, count = 1, description = "Hello there!"},
                 },
-                month = 1,
-                year = 2022,
             };
 
-            Examples.Add(OpenApiExampleResolver.Resolve("InvoieExample", request, namingStrategy));
+            Examples.Add(OpenApiExampleResolver.Resolve("UpdateInvoiceRequestExample", request, namingStrategy));
             return this;
         }
     }

@@ -27,6 +27,7 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
+    <Content Include="keen-la-send-greeting-invoice-to-billing-service.json" />
     <Content Include="keen-la-send-weather-greeting.json" />
     <Content Include="keen-la-send-weather-greeting.parameters.json" />
   </ItemGroup>
