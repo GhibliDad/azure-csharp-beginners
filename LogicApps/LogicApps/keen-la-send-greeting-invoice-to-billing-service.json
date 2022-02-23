@@ -187,7 +187,7 @@
                     "uri": "https://greeting-billing-service-function-dev.azurewebsites.net/api/invoice/@{body('Parse_GreetingService.Invoice')?['sender']?['email']}/@{body('Parse_GreetingService.Invoice')?['year']}/@{body('Parse_GreetingService.Invoice')?['month']}?code=@{parameters('billingServicePassword')}"
                   },
                   "runAfter": {
-                    "Parse_GreetingService.Invoice": [
+                    "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows": [
                       "Succeeded"
                     ]
                   }
@@ -198,7 +198,7 @@
                     "and": [
                       {
                         "equals": [
-                          "",
+                          "@outputs('GET_BillingService.Invoice')['statusCode']",
                           200
                         ]
                       }
@@ -280,7 +280,7 @@
                     }
                   },
                   "runAfter": {
-                    "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows": [
+                    "GET_BillingService.Invoice": [
                       "Succeeded"
                     ]
                   },
@@ -316,7 +316,7 @@
                     }
                   },
                   "runAfter": {
-                    "GET_BillingService.Invoice": [
+                    "Parse_GreetingService.Invoice": [
                       "Succeeded"
                     ]
                   }
