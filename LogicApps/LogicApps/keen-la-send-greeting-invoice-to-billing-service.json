@@ -269,23 +269,7 @@
                           "customer": "@body('Parse_BillingService.Invoice')?['customer']",
                           "amount": "@body('Parse_GreetingService.Invoice')?['totalAmount']",
                           "currency": "@body('Parse_GreetingService.Invoice')?['currency']",
-                          "invoice_rows": "@body('GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Update)')"
-                        }
-                      },
-                      "runAfter": {
-                        "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Update)": [
-                          "Succeeded"
-                        ]
-                      }
-                    },
-                    "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Update)": {
-                      "type": "Select",
-                      "inputs": {
-                        "from": "@body('Parse_GreetingService.Invoice')?['greetings']",
-                        "select": {
-                          "description": "@item()?['message']",
-                          "count": "1",
-                          "amount": "@body('Parse_GreetingService.Invoice')?['amountPerGreeting']"
+                          "invoice_rows": "@body('GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows')"
                         }
                       },
                       "runAfter": {
@@ -296,9 +280,8 @@
                     }
                   },
                   "runAfter": {
-                    "GET_BillingService.Invoice": [
-                      "Succeeded",
-                      "Failed"
+                    "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows": [
+                      "Succeeded"
                     ]
                   },
                   "else": {
@@ -313,28 +296,29 @@
                             "month": "@body('Parse_GreetingService.Invoice')?['month']",
                             "customer": "@body('Parse_GreetingService.Invoice')?['sender']?['email']",
                             "amount": "@body('Parse_GreetingService.Invoice')?['totalAmount']",
-                            "currency": "@body('Parse_GreetingService.Invoice')?['currency']"
-                          }
-                        },
-                        "runAfter": {
-                          "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Create)": [
-                            "Succeeded"
-                          ]
-                        }
-                      },
-                      "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Create)": {
-                        "type": "Select",
-                        "inputs": {
-                          "from": "@body('Parse_GreetingService.Invoice')?['greetings']",
-                          "select": {
-                            "description": "@item()?['message']",
-                            "count": "1",
-                            "amount": "@body('Parse_GreetingService.Invoice')?['amountPerGreeting']"
+                            "currency": "@body('Parse_GreetingService.Invoice')?['currency']",
+                            "invoice_rows": "@body('GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows')"
                           }
                         },
                         "runAfter": {}
                       }
                     }
+                  }
+                },
+                "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows": {
+                  "type": "Select",
+                  "inputs": {
+                    "from": "@body('Parse_GreetingService.Invoice')?['greetings']",
+                    "select": {
+                      "description": "@item()?['message']",
+                      "count": "1",
+                      "amount": "@body('Parse_GreetingService.Invoice')?['amountPerGreeting']"
+                    }
+                  },
+                  "runAfter": {
+                    "GET_BillingService.Invoice": [
+                      "Succeeded"
+                    ]
                   }
                 }
               },
