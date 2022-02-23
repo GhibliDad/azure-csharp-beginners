@@ -316,7 +316,11 @@
                             "currency": "@body('Parse_GreetingService.Invoice')?['currency']"
                           }
                         },
-                        "runAfter": {}
+                        "runAfter": {
+                          "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Create)": [
+                            "Succeeded"
+                          ]
+                        }
                       },
                       "GreetingService.Invoice.Greetings_to_BillingService.Invoice.InvoiceRows_(Create)": {
                         "type": "Select",
@@ -328,11 +332,7 @@
                             "amount": "@body('Parse_GreetingService.Invoice')?['amountPerGreeting']"
                           }
                         },
-                        "runAfter": {
-                          "POST_BillingService.Invoice": [
-                            "Succeeded"
-                          ]
-                        }
+                        "runAfter": {}
                       }
                     }
                   }
