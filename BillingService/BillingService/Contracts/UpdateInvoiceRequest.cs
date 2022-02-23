@@ -15,7 +15,7 @@ namespace BillingService
     public class UpdateInvoiceRequest
     {
         public Guid id { get; set; }
-        public decimal amount { get; set; }
+        public double amount { get; set; }
         public string currency { get; set; }
         public IEnumerable<InvoiceRow> invoice_rows { get; set; }
     }

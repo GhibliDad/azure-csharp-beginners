@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
@@ -44,6 +45,12 @@ namespace BillingService
             catch (Exception e)
             {
                 return new BadRequestObjectResult(e.Message);
+            }
+
+            var invoiceRowAmountSum = request.invoice_rows.Sum(x => x.count * x.amount);
+            if (request.amount != invoiceRowAmountSum)
+            {
+                return new BadRequestObjectResult($"Invoice amount: {request.amount} does not match invoice rows sum: {invoiceRowAmountSum}");
             }
 
             var invoice = new Invoice

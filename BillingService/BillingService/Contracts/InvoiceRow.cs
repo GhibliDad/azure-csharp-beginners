@@ -10,6 +10,6 @@ namespace BillingService.Contracts
     {
         public string description { get; set; }
         public double count { get; set; }
-        public decimal amount { get; set; }
+        public double amount { get; set; }
     }
 }

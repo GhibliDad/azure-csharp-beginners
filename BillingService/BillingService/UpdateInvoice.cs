@@ -47,6 +47,12 @@ namespace BillingService
                 return new BadRequestObjectResult(e.Message);
             }
 
+            var invoiceRowAmountSum = request.invoice_rows.Sum(x => x.count * x.amount);
+            if (request.amount != invoiceRowAmountSum)
+            {
+                return new BadRequestObjectResult($"Invoice amount: {request.amount} does not match invoice rows sum: {invoiceRowAmountSum}");
+            }
+
             var blobs = _blobContainerClient.GetBlobsAsync();
             var blob = await blobs.FirstOrDefaultAsync(x => x.Name.EndsWith(request.id.ToString()));
 

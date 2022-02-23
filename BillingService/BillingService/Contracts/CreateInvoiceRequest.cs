@@ -17,7 +17,7 @@ namespace BillingService
         public int year { get; set; }
         public int month { get; set; }
         public string customer { get; set; }
-        public decimal amount { get; set; }
+        public double amount { get; set; }
         public string currency { get; set; }
         public IEnumerable<InvoiceRow> invoice_rows { get; set; }
     }
