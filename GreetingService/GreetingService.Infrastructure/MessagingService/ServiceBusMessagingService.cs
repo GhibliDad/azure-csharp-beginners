@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using GreetingService.Core.Entities;
+using GreetingService.Core.Enums;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,13 +21,13 @@ namespace GreetingService.Infrastructure.MessagingService
             _serviceBusSender = serviceBusSender;
         }
 
-        public async Task SendAsync(Greeting greeting)
+        public async Task SendAsync<T>(T message, MessagingServiceSubject subject)
         {
-            var message = new ServiceBusMessage(JsonSerializer.Serialize(greeting))
+            var serviceBusMessage = new ServiceBusMessage(JsonSerializer.Serialize(message))
             {
-                Subject = "greeting"
+                Subject = subject.ToString()
             };
-            await _serviceBusSender.SendMessageAsync(message);
+            await _serviceBusSender.SendMessageAsync(serviceBusMessage);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
+using GreetingService.Core.Enums;
 using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -55,7 +56,7 @@ namespace GreetingService.API.Function.Greetings
 
             try
             {
-                await _messagingService.SendAsync(greeting);
+                await _messagingService.SendAsync(greeting, MessagingServiceSubject.NewGreeting);
             }
             catch
             {
