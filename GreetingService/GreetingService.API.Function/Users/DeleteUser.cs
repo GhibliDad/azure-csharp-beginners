@@ -15,47 +15,35 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Users
 {
-    public class PutUser
+    public class DeleteUser
     {
-        private readonly ILogger<PutUser> _logger;
+        private readonly ILogger<DeleteUser> _logger;
         private readonly IAuthHandler _authHandler;
         private readonly IUserService _userService;
 
-        public PutUser(ILogger<PutUser> log, IAuthHandler authHandler, IUserService userService)
+        public DeleteUser(ILogger<DeleteUser> log, IAuthHandler authHandler, IUserService userService)
         {
             _logger = log;
             _authHandler = authHandler;
             _userService = userService;
         }
 
-        [FunctionName("PutUser")]
+        [FunctionName("DeleteUser")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "User" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(User), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{email}")] HttpRequest req, string email)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            User user;
-            try
-            {
-                user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            catch (Exception e)
-            {
-                return new BadRequestObjectResult(e.Message);
-            }
+            await _userService.DeleteUserAsync(email);
 
-            await _userService.UpdateUserAsync(user);
-
-            var updatedUser = await _userService.GetUserAsync(user.Email);
-            
-            return new OkObjectResult(updatedUser);
+            return new OkResult();
         }
     }
 }

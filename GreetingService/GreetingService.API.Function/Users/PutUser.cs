@@ -15,35 +15,45 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Users
 {
-    public class DeleteUser
+    public class PutUser
     {
-        private readonly ILogger<DeleteUser> _logger;
+        private readonly ILogger<PutUser> _logger;
         private readonly IAuthHandler _authHandler;
-        private readonly IUserService _userService;
+        private readonly IMessagingService _messagingService;
 
-        public DeleteUser(ILogger<DeleteUser> log, IAuthHandler authHandler, IUserService userService)
+        public PutUser(ILogger<PutUser> log, IAuthHandler authHandler, IMessagingService messagingService)
         {
             _logger = log;
             _authHandler = authHandler;
-            _userService = userService;
+            _messagingService = messagingService;
         }
 
-        [FunctionName("DeleteUser")]
+        [FunctionName("PutUser")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "User" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(User), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{email}")] HttpRequest req, string email)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            await _userService.DeleteUserAsync(email);
-            
-            return new OkResult();
+            User user;
+            try
+            {
+                user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+
+            await _messagingService.SendAsync(user, Core.Enums.MessagingServiceSubject.UpdateUser);
+
+            return new AcceptedResult();        //accepted status code means: We've received your request and it will be processed in due time, good response for asynchronous flows like this endpoints now has become when using IMessagingService.SendAsync()
         }
     }
 }

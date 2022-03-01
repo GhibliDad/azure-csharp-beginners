@@ -11,6 +11,9 @@ namespace GreetingService.Core.Enums
     /// </summary>
     public enum MessagingServiceSubject
     {
-        NewGreeting
+        NewGreeting,
+        UpdateGreeting,
+        NewUser,
+        UpdateUser,
     }
 }

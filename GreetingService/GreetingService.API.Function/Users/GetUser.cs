@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
@@ -14,49 +13,40 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Users
 {
-    public class PostUser
+    public class GetUser
     {
-        private readonly ILogger<PostUser> _logger;
+        private readonly ILogger<GetUser> _logger;
         private readonly IAuthHandler _authHandler;
         private readonly IUserService _userService;
 
-        public PostUser(ILogger<PostUser> log, IAuthHandler authHandler, IUserService userService)
+        public GetUser(ILogger<GetUser> log, IAuthHandler authHandler, IUserService userService)
         {
             _logger = log;
             _authHandler = authHandler;
             _userService = userService;
         }
 
-        [FunctionName("PostUser")]
+        [FunctionName("GetUser")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "User" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(User), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{email}")] HttpRequest req, string email)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            User user;
-            try
-            {
-                user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            catch (Exception e)
-            {
-                return new BadRequestObjectResult(e.Message);
-            }
-            
+            var user = await _userService.GetUserAsync(email);
 
-            await _userService.CreateUserAsync(user);
+            if (user == null)
+                return new NotFoundObjectResult("Not found");
 
-            var createdUser = await _userService.GetUserAsync(user.Email);
-
-            return new OkObjectResult(createdUser);
+            return new OkObjectResult(user);
         }
     }
 }

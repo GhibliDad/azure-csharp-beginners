@@ -15,38 +15,35 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Users
 {
-    public class GetUser
+    public class GetUsers
     {
-        private readonly ILogger<GetUser> _logger;
+        private readonly ILogger<GetUsers> _logger;
         private readonly IAuthHandler _authHandler;
         private readonly IUserService _userService;
 
-        public GetUser(ILogger<GetUser> log, IAuthHandler authHandler, IUserService userService)
+        public GetUsers(ILogger<GetUsers> log, IAuthHandler authHandler, IUserService userService)
         {
             _logger = log;
             _authHandler = authHandler;
             _userService = userService;
         }
 
-        [FunctionName("GetUser")]
+        [FunctionName("GetUsers")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "User" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(User), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{email}")] HttpRequest req, string email)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            var user = await _userService.GetUserAsync(email);
+            var users = await _userService.GetUsersAsync();
 
-            if (user == null)
-                return new NotFoundObjectResult("Not found");
-            
-            return new OkObjectResult(user);
+            return new OkObjectResult(users);
         }
     }
 }

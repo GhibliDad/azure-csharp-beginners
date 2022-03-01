@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
@@ -13,37 +14,47 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Users
 {
-    public class GetUsers
+    public class PostUser
     {
-        private readonly ILogger<GetUsers> _logger;
+        private readonly ILogger<PostUser> _logger;
         private readonly IAuthHandler _authHandler;
-        private readonly IUserService _userService;
+        private readonly IMessagingService _messagingService;
 
-        public GetUsers(ILogger<GetUsers> log, IAuthHandler authHandler, IUserService userService)
+        public PostUser(ILogger<PostUser> log, IAuthHandler authHandler, IMessagingService messagingService)
         {
             _logger = log;
             _authHandler = authHandler;
-            _userService = userService;
+            _messagingService = messagingService;
         }
 
-        [FunctionName("GetUsers")]
+        [FunctionName("PostUser")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "User" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(User), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            var users = await _userService.GetUsersAsync();
-            
-            return new OkObjectResult(users);
+            User user;
+            try
+            {
+                user = JsonSerializer.Deserialize<User>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+
+
+            await _messagingService.SendAsync(user, Core.Enums.MessagingServiceSubject.NewUser);
+
+            return new AcceptedResult();        //accepted status code means: We've received your request and it will be processed in due time, good response for asynchronous flows like this endpoints now has become when using IMessagingService.SendAsync()
         }
     }
 }

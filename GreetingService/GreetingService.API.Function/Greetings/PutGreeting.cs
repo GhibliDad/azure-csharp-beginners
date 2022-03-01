@@ -20,14 +20,14 @@ namespace GreetingService.API.Function.Greetings
     public class PutGreeting
     {
         private readonly ILogger<PutGreeting> _logger;
-        private readonly IGreetingRepository _greetingRepository;
         private readonly IAuthHandler _authHandler;
+        private readonly IMessagingService _messagingService;
 
-        public PutGreeting(ILogger<PutGreeting> log, IGreetingRepository greetingRepository, IAuthHandler authHandler)
+        public PutGreeting(ILogger<PutGreeting> log, IAuthHandler authHandler, IMessagingService messagingService)
         {
             _logger = log;
-            _greetingRepository = greetingRepository;
             _authHandler = authHandler;
+            _messagingService = messagingService;
         }
 
         [FunctionName("PutGreeting")]
@@ -53,7 +53,7 @@ namespace GreetingService.API.Function.Greetings
 
             try
             {
-                await _greetingRepository.UpdateAsync(greeting);
+                await _messagingService.SendAsync(greeting, Core.Enums.MessagingServiceSubject.UpdateGreeting);
             }
             catch
             {
