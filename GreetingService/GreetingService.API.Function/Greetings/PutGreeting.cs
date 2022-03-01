@@ -15,7 +15,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Greetings
 {
     public class PutGreeting
     {

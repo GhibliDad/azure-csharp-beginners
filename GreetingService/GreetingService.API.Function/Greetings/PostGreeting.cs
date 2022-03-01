@@ -16,19 +16,19 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Greetings
 {
     public class PostGreeting
     {
         private readonly ILogger<PostGreeting> _logger;
-        private readonly IGreetingRepository _greetingRepository;
         private readonly IAuthHandler _authHandler;
+        private readonly IMessagingService _messagingService;
 
-        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepository greetingRepository, IAuthHandler authHandler)
+        public PostGreeting(ILogger<PostGreeting> log, IAuthHandler authHandler, IMessagingService messagingService)
         {
             _logger = log;
-            _greetingRepository = greetingRepository;
             _authHandler = authHandler;
+            _messagingService = messagingService;
         }
 
         [FunctionName("PostGreeting")]
@@ -55,7 +55,7 @@ namespace GreetingService.API.Function
 
             try
             {
-                await _greetingRepository.CreateAsync(greeting);
+                await _messagingService.SendAsync(greeting);
             }
             catch
             {

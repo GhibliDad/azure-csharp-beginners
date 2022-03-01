@@ -11,6 +11,9 @@ using GreetingService.Infrastructure.UserService;
 using GreetingService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using GreetingService.Infrastructure.InvoiceService;
+using Microsoft.Extensions.Azure;
+using Azure.Messaging.ServiceBus;
+using GreetingService.Infrastructure.MessagingService;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 namespace GreetingService.API.Function
@@ -26,7 +29,7 @@ namespace GreetingService.API.Function
 
             //Create a Serilog logger and register it as a logger
             //Get the Azure Storage Account connection string from our IConfiguration
-            builder.Services.AddLogging(c => 
+            builder.Services.AddLogging(c =>
             {
                 var connectionString = config["LoggingStorageAccount"];
                 if (string.IsNullOrWhiteSpace(connectionString))
@@ -51,9 +54,19 @@ namespace GreetingService.API.Function
 
             builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
 
+            builder.Services.AddScoped<IMessagingService, ServiceBusMessagingService>();
+
             builder.Services.AddDbContext<GreetingDbContext>(options =>
             {
                 options.UseSqlServer(config["GreetingDbConnectionString"]);     //make sure that the "GreetingDbConnectionString" app setting contains the connection string value
+            });
+
+            //The we only need ServiceBusSender to be able to send messages to Service Bus. This class is thread safe and should be reused for the lifetime of the application - register it as singleton to reuse the same instance in all places we use this class
+            //more info here: https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-performance-improvements?tabs=net-standard-sdk-2#reusing-factories-and-clients
+            builder.Services.AddSingleton(c =>
+            {
+                var serviceBusClient = new ServiceBusClient(config["ServiceBusConnectionString"]);      //remember to add this connection to the application configuration
+                return serviceBusClient.CreateSender("main");
             });
         }
     }

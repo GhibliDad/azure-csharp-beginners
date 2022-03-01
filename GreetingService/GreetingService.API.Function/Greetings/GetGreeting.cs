@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -14,37 +15,41 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Greetings
 {
-    public class GetGreetings
+    public class GetGreeting
     {
-        private readonly ILogger<GetGreetings> _logger;
+        private readonly ILogger<GetGreeting> _logger;
         private readonly IGreetingRepository _greetingRepository;
         private readonly IAuthHandler _authHandler;
 
-        public GetGreetings(ILogger<GetGreetings> log, IGreetingRepository greetingRepository, IAuthHandler authHandler)
+        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepository greetingRepository, IAuthHandler authHandler)
         {
             _logger = log;
             _greetingRepository = greetingRepository;
             _authHandler = authHandler;
         }
 
-        [FunctionName("GetGreetings")]
+        [FunctionName("GetGreeting")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "Greeting" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<Greeting>), Description = "The OK response")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting")] HttpRequest req)
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Not found")]
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting/{id}")] HttpRequest req, string id)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            var from = req.Query["from"];
-            var to = req.Query["to"];
+            if (!Guid.TryParse(id, out var idGuid))
+                return new BadRequestObjectResult($"{id} is not a valid Guid");
 
-            var greetings = await _greetingRepository.GetAsync(from, to);
-            
-            return new OkObjectResult(greetings);
+            var greeting = await _greetingRepository.GetAsync(idGuid);
+
+            if (greeting == null)
+                return new NotFoundObjectResult("Not found");
+
+            return new OkObjectResult(greeting);
         }
     }
 }
