@@ -156,7 +156,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview
         name: 'subject'
         properties: {
           correlationFilter: {
-            label: 'greeting'
+            label: 'NewGreeting'
           }
           filterType: 'CorrelationFilter'
         }
