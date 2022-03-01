@@ -26,26 +26,26 @@ namespace GreetingService.Infrastructure.Test
             {
                 new Greeting
                 {
-                    From = "from1",
-                    To = "to1",
+                    From = "from1@domain.com",
+                    To = "to1@domain.com",
                     Message = "message1",
                 },
                 new Greeting
                 {
-                    From = "from2",
-                    To = "to2",
+                    From = "from2@domain.com",
+                    To = "to2@domain.com",
                     Message = "message2",
                 },
                 new Greeting
                 {
-                    From = "from3",
-                    To = "to3",
+                    From = "from3@domain.com",
+                    To = "to3@domain.com",
                     Message = "message3",
                 },
                 new Greeting
                 {
-                    From = "from4",
-                    To = "to4",
+                    From = "from4@domain.com",
+                    To = "to4@domain.com",
                     Message = "message4",
                 },
             };
@@ -83,8 +83,8 @@ namespace GreetingService.Infrastructure.Test
 
             var newGreeting = new Greeting
             {
-                From = "post_test",
-                To = "post_test",
+                From = "post_test@domain.com",
+                To = "post_test@domain.com",
                 Message = "post_test",
             };
 
