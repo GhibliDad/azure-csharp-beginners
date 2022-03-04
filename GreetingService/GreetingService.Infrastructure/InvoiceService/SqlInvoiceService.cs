@@ -34,6 +34,13 @@ namespace GreetingService.Infrastructure.InvoiceService
             }
         }
 
+        /// <summary>
+        /// Gets one invoice for a user and period (year and month). Returns null if no invoice exists for the user and period.
+        /// </summary>
+        /// <param name="year">Year the Greeting was sent</param>
+        /// <param name="month">Month the Greeting was sent</param>
+        /// <param name="email">Email of sender</param>
+        /// <returns>Invoice if exists, null otherwise</returns>
         public async Task<Invoice> GetInvoiceAsync(int year, int month, string email)
         {
             //Only one invoice per user and month should exist

@@ -21,9 +21,17 @@ namespace GreetingService.Core.Entities
         public IEnumerable<Greeting> Greetings { get; set; }
         public int Year { get; set; }
         public int Month { get; set; }
+
+        /// <summary>
+        /// Default value = 21
+        /// </summary>
         public decimal AmountPerGreeting { get; set; } = 21;
 
         private decimal _totalAmount;
+
+        /// <summary>
+        /// This is computed from Greetings.Count() * AmountPerGreeting
+        /// </summary>
         public decimal TotalAmount 
         {
             get
@@ -38,6 +46,10 @@ namespace GreetingService.Core.Entities
                 _totalAmount = value;
             }
         }
-        public string Currency { get; set; } = "kr";
+
+        /// <summary>
+        /// Default value = "sek"
+        /// </summary>
+        public string Currency { get; set; } = "sek";
     }
 }
