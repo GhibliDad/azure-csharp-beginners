@@ -58,13 +58,13 @@ namespace GreetingService.Infrastructure.ApprovalService
 									{{
 										""@type"": ""HttpPOST"",
 										""name"": ""Approve"",
-										""target"": ""{_greetingServiceBaseUrl}/user/approve/{user.ApprovalCode}""
+										""target"": ""{_greetingServiceBaseUrl}/api/user/approve/{user.ApprovalCode}""
 	
 									}},
 									{{
 										""@type"": ""HttpPOST"",
 										""name"": ""Reject"",
-										""target"": ""{_greetingServiceBaseUrl}/user/reject/{user.ApprovalCode}""
+										""target"": ""{_greetingServiceBaseUrl}/api/user/reject/{user.ApprovalCode}""
 									}}
 								]
 							}}
