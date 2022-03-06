@@ -23,6 +23,11 @@ namespace GreetingService.Infrastructure.UserService
             _blobContainerClient.CreateIfNotExists();                               //create the container if it does not already exist
         }
 
+        public Task ApproveUserAsync(string approvalCode)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task CreateUserAsync(User user)
         {
             throw new NotImplementedException();
@@ -79,6 +84,11 @@ namespace GreetingService.Infrastructure.UserService
             }
 
             return false;
+        }
+
+        public Task RejectUserAsync(string approvalCode)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task UpdateUserAsync(User user)

@@ -1,4 +1,5 @@
 ﻿using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -23,8 +24,17 @@ namespace GreetingService.Infrastructure.UserService
 
         public async Task CreateUserAsync(User user)
         {
+            if (await _greetingDbContext.Users.AnyAsync(x => x.Email == user.Email && x.ApprovalStatus == UserApprovalStatus.Approved))
+                return;
+
+            var existingUnapprovedUser = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.Email == user.Email && x.ApprovalStatus != UserApprovalStatus.Approved);
+            if (existingUnapprovedUser != null)
+                _greetingDbContext.Users.Remove(existingUnapprovedUser);
+
             user.Created = DateTime.Now;
             user.Modified = DateTime.Now;
+            user.ApprovalStatus = UserApprovalStatus.Pending;
+            user.ApprovalStatusNote = "Awaiting approval from administrator";
             await _greetingDbContext.Users.AddAsync(user);
             await _greetingDbContext.SaveChangesAsync();
         }
@@ -35,7 +45,7 @@ namespace GreetingService.Infrastructure.UserService
             if (user == null)
             {
                 _logger.LogWarning("Delete user failed, user with email {email} not found", email);
-                throw new Exception();      //Consider throwing a custom not found exception instead
+                throw new UserNotFoundException($"User {email} not found");
             }
 
             _greetingDbContext.Users.Remove(user);
@@ -63,7 +73,7 @@ namespace GreetingService.Infrastructure.UserService
             if (existingUser == null)
             {
                 _logger.LogWarning("Update user failed, user with email {email} not found", user.Email);
-                throw new Exception("User not found");      //Consider throwing a custom not found exception instead
+                throw new UserNotFoundException($"User {user.Email} not found");
             }
 
             if (!string.IsNullOrWhiteSpace(user.Password))
@@ -95,6 +105,33 @@ namespace GreetingService.Infrastructure.UserService
                 return true;
 
             return false;
+        }
+
+        public async Task ApproveUserAsync(string approvalCode)
+        {
+            User? user = await GetUserForApprovalAsync(approvalCode);
+
+            user.ApprovalStatus = UserApprovalStatus.Approved;
+            user.ApprovalStatusNote = $"Approved by an administrator at {DateTime.Now:O}";
+            await _greetingDbContext.SaveChangesAsync();
+        }
+
+        public async Task RejectUserAsync(string approvalCode)
+        {
+            var user = await GetUserForApprovalAsync(approvalCode);
+
+            user.ApprovalStatus = UserApprovalStatus.Rejected;
+            user.ApprovalStatusNote = $"Rejected by an administrator at {DateTime.Now:O}";
+            await _greetingDbContext.SaveChangesAsync();
+        }
+
+        private async Task<User> GetUserForApprovalAsync(string approvalCode)
+        {
+            var user = await _greetingDbContext.Users.FirstOrDefaultAsync(x => x.ApprovalStatus == UserApprovalStatus.Pending && x.ApprovalCode.Equals(approvalCode) && x.ApprovalExpiry > DateTime.Now);
+            if (user == null)
+                throw new UserNotFoundException($"User with approval code: {approvalCode} not found");
+            
+            return user;
         }
     }
 }

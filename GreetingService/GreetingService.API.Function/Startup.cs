@@ -14,6 +14,7 @@ using GreetingService.Infrastructure.InvoiceService;
 using Microsoft.Extensions.Azure;
 using Azure.Messaging.ServiceBus;
 using GreetingService.Infrastructure.MessagingService;
+using GreetingService.Infrastructure.ApprovalService;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 namespace GreetingService.API.Function
@@ -24,7 +25,7 @@ namespace GreetingService.API.Function
         {
             var config = builder.GetContext().Configuration;        //Get all configured app settings in an IConfiguration like this
 
-            builder.Services.AddHttpClient();
+            builder.Services.AddHttpClient();       //this registers both HttpClient and IHttpClientFactory in dependency injection
             builder.Services.AddLogging();
 
             //Create a Serilog logger and register it as a logger
@@ -47,14 +48,11 @@ namespace GreetingService.API.Function
             });
 
             builder.Services.AddScoped<IGreetingRepository, SqlGreetingRepository>();
-
             builder.Services.AddScoped<IUserService, SqlUserService>();
-
             builder.Services.AddScoped<IAuthHandler, BasicAuthHandler>();
-
             builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
-
             builder.Services.AddScoped<IMessagingService, ServiceBusMessagingService>();
+            builder.Services.AddScoped<IApprovalService, TeamsApprovalService>();
 
             builder.Services.AddDbContext<GreetingDbContext>(options =>
             {
