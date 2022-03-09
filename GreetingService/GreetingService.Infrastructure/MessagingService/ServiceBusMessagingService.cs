@@ -25,7 +25,7 @@ namespace GreetingService.Infrastructure.MessagingService
         {
             var serviceBusMessage = new ServiceBusMessage(JsonSerializer.Serialize(message))
             {
-                Subject = subject.ToString()
+                Subject = subject.ToString(),
             };
             await _serviceBusSender.SendMessageAsync(serviceBusMessage);
         }

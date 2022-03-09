@@ -67,5 +67,10 @@ namespace GreetingService.API.Function
                 return serviceBusClient.CreateSender("main");
             });
         }
+
+        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+        {
+            builder.ConfigurationBuilder.AddAzureKeyVault(Environment.GetEnvironmentVariable("KeyVaultUri"));
+        }
     }
 }

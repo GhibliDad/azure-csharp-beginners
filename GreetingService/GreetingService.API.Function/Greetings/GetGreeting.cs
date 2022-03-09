@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,12 +45,19 @@ namespace GreetingService.API.Function.Greetings
             if (!Guid.TryParse(id, out var idGuid))
                 return new BadRequestObjectResult($"{id} is not a valid Guid");
 
-            var greeting = await _greetingRepository.GetAsync(idGuid);
+            try
+            {
+                var greeting = await _greetingRepository.GetAsync(idGuid);
 
-            if (greeting == null)
-                return new NotFoundObjectResult("Not found");
+                if (greeting == null)
+                    return new NotFoundObjectResult("Not found");
 
-            return new OkObjectResult(greeting);
+                return new OkObjectResult(greeting);
+            }
+            catch (GreetingNotFoundException e)
+            {
+                return new NotFoundObjectResult(e.Message);
+            }
         }
     }
 }

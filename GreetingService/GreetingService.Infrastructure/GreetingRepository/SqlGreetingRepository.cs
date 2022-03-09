@@ -1,4 +1,5 @@
 ﻿using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,7 +29,7 @@ namespace GreetingService.Infrastructure.GreetingRepository
         {
             var greeting = await _greetingDbContext.Greetings.FirstOrDefaultAsync(x => x.Id == id);             //Can use LINQ to query the db. EF Core will translate this to T-SQL before sending to the db
             if (greeting == null)
-                throw new Exception("Not found");
+                throw new GreetingNotFoundException($"Greeting with id {id} not found");
             
             return greeting;
         }
