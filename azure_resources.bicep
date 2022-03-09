@@ -105,10 +105,6 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           value: listKeys('${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey', serviceBusNamespace.apiVersion).primaryConnectionString
         }
         {
-          name: 'TeamsWebHookUrl'
-          value: 'https://hennesandmauritz.webhook.office.com/webhookb2/224bce5b-9e29-4fb1-a0bc-b053189e0953@30f52344-4663-4c2e-bab3-61bf24ebbed8/IncomingWebhook/7ef57860f8a04531a32308a0b1bfaaa4/90960f29-25a6-4b09-b627-5e1667146073'
-        }
-        {
           name: 'GreetingServiceBaseUrl'
           value: 'https://keentestdev.azurewebsites.net'
         }
