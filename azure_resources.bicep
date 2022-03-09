@@ -98,16 +98,8 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
         }
         {
-          name: 'FileRepositoryFilePath'
-          value: '/home/site/wwwroot/greeting.json'
-        }
-        {
           name: 'ServiceBusConnectionString'
           value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/ServiceBusConnectionString/)'
-        }
-        {
-          name: 'GreetingServiceBaseUrl'
-          value: 'https://keentestdev.azurewebsites.net'
         }
         // WEBSITE_CONTENTSHARE will also be auto-generated - https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentshare
         // WEBSITE_RUN_FROM_PACKAGE will be set to 1 by func azure functionapp publish
@@ -284,4 +276,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     }
   }
 
+  resource greetingServiceBaseUrlSecret 'secrets@2021-11-01-preview' = {
+    name: 'GreetingServiceBaseUrl'
+    properties: {
+      value: 'https://keentestdev.azurewebsites.net'
+    }
+  }
 }
