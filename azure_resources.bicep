@@ -279,7 +279,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   resource greetingServiceBaseUrlSecret 'secrets@2021-11-01-preview' = {
     name: 'GreetingServiceBaseUrl'
     properties: {
-      value: 'https://keentestdev.azurewebsites.net'
+      value: 'https://${appName}.azurewebsites.net'
     }
   }
 }
