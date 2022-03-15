@@ -4,15 +4,22 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationInsightsResourceId>/subscriptions/23959d6c-598d-4125-8fc2-386ad549953d/resourcegroups/keen-rg-dev/providers/Microsoft.Insights/components/keen-appinsights-dev</ApplicationInsightsResourceId>
+    <UserSecretsId>41afc9d5-ebba-4f80-95b8-10c64919932f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GreetingService.Core\GreetingService.Core.csproj" />
     <ProjectReference Include="..\GreetingService.Infrastructure\GreetingService.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>

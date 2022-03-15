@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GreetingService.Core.Exceptions;
+using GreetingService.Core.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,103 +13,40 @@ namespace GreetingService.Core.Entities
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Message { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.Now;
-        private static readonly JsonSerializerOptions _serializerOptions;
-        
-        /// <summary>
-        /// Makes a greeting with current date and time and a new guid
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="message"></param>
-        public Greeting(string from, string to, string message)
-        {
-            From = from;
-            To = to;
-            Message = message;
-        }
 
-        /// <summary>
-        /// Makes a greeting with specified guid and current date and time
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="message"></param>
-        /// <param name="id"></param>
-        public Greeting(string from, string to, string message, Guid id)
+        private string _from;
+        public string From 
         {
-            From = from;
-            To = to;
-            Message = message;
-            Id = id;
-        }
-
-        /// <summary>
-        /// Makes a greeting with a new guid.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="message"></param>
-        /// <param name="timestamp"></param>
-        public Greeting(string from, string to, string message, DateTime timestamp)
-        {
-            From = from;
-            To = to;
-            Message = message;
-            Timestamp = timestamp;
-        }
-
-        /// <summary>
-        /// Makes a greeting with all properties specified.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="message"></param>
-        /// <param name="id"></param>
-        /// <param name="timestamp"></param>
-        public Greeting(string from, string to, string message, Guid id, DateTime timestamp)
-        {
-            Timestamp = timestamp;
-            From = from;
-            To = to;
-            Message = message;
-            Id = id;
-        }
-
-        /// <summary>
-        /// Initializes serializer options for the json serializer and deserializer.
-        /// </summary>
-        static Greeting()
-        {
-            _serializerOptions = new()
+            get
             {
-                AllowTrailingCommas = true,
-                PropertyNameCaseInsensitive = true,
-                WriteIndented = true
-            };
-        }
+                return _from;
+            }
 
-        /// <summary>
-        /// Takes a json string and returns a Greeting. Property names are not case-sensitive.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns>A object of class Greeting</returns>
-        public static Greeting JsonDeserialize(string json)
-        {
-            Greeting g = JsonSerializer.Deserialize<Greeting>(json, _serializerOptions);
-            return g;
-        }
+            set
+            {
+                if (!InputValidationHelper.IsValidEmail(value))
+                    throw new InvalidEmailException($"{value} is not a valid email");
 
-        /// <summary>
-        /// Returns a string of this greeting serialized to json.
-        /// </summary>
-        /// <returns>Json string</returns>
-        public string ToJson()
-        {
-            string s = JsonSerializer.Serialize<Greeting>(this, _serializerOptions);
-            return s;
+                _from = value;
+            }
         }
+        
+        private string _to;
+        public string To
+        {
+            get 
+            {
+                return _to;
+            }
+
+            set 
+            {
+                if (!InputValidationHelper.IsValidEmail(value))
+                    throw new InvalidEmailException($"{value} is not a valid email");
+
+                _to = value;
+            }
+        }
+        public DateTime Timestamp { get; set;  } = DateTime.Now;
     }
 }
